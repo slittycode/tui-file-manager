@@ -164,6 +164,7 @@ class FileManagerApp(App):
         super().__init__()
         self.current_path = Path.home()
         self.selected_file = None
+        self.help_visible = False
     
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
@@ -338,6 +339,16 @@ class FileManagerApp(App):
     
     def action_toggle_help(self) -> None:
         """Show help information."""
+        if self.help_visible:
+            self.help_visible = False
+            if self.selected_file is not None:
+                self.update_preview(self.selected_file)
+                self.update_footer(self.selected_file)
+            else:
+                self.action_clear_selection()
+            return
+
+        self.help_visible = True
         preview = self.query_one("#preview-content", Static)
         header = self.query_one("#preview-header", Static)
         footer = self.query_one("#preview-footer", Static)
