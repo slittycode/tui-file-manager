@@ -25,8 +25,8 @@
 - [x] File operations (copy, move, delete, rename)
 - [x] Keyboard shortcuts for operations
 - [x] Status bar with file info
-- [ ] Git status indicators
-- [ ] Configuration UI
+- [x] Git status indicators
+- [x] Configuration UI
 
 ## 📋 Phase 3: Enhanced UX
 - [x] Search/filter functionality (MVP)
@@ -48,6 +48,16 @@
 - [ ] Dual pane layout needs verification on all terminals
 - [ ] Need to test on Linux and Windows
 - [ ] Large directory loading can still block UI
+- [ ] RuntimeWarning in tests: coroutine 'DirectoryTree.watch_path' was never awaited
+- [x] pytest configuration fixed - tests now run without PYTHONPATH override (FIXED)
+- [x] Help text incorrectly stated bookmarks as "coming soon" (FIXED)
+
+## ✅ Audit Status (Feb 2026)
+**Overall:** SHIPPABLE FOR BETA RELEASE
+- 71/71 tests passing (100%)
+- Ruff linting clean
+- 95% code coverage
+- See [AUDIT_REPORT.md](AUDIT_REPORT.md) for full details
 
 ## 💡 Ideas
 - Quick preview toggle (space bar)

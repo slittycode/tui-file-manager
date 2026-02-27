@@ -46,8 +46,8 @@ class TestConfigManager:
         config_path = temp_dir / "config.json"
         config = ConfigManager(config_path)
 
-        config.set("custom_key", "custom_value")
-        assert config.get("custom_key") == "custom_value"
+        config.set("theme", "light")
+        assert config.get("theme") == "light"
 
     def test_get_with_default(self, temp_dir: Path) -> None:
         """Should return default for missing keys."""

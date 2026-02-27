@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Type hints throughout the codebase
 - Python packaging support via `pyproject.toml`
 - TUI FM branding and naming
+- Git status indicators in file tree (M, A, D, ?)
+- Git service for file status detection with caching
+- Git status legend in help screen
+- Configuration UI with modal screen (, key)
+- Enhanced ConfigManager with validation and auto-save
+- Settings for theme, preview limits, ignored patterns, and more
 
 ### Changed
 - Enhanced error handling in filesystem operations

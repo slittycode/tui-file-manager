@@ -12,6 +12,7 @@ from textual.widgets import Footer, Header, Input, Static
 
 from bookmarks_manager import BookmarksManager
 from config_manager import ConfigManager
+from config_ui import ConfigScreen
 from filesystem_service import FileSystemService
 from filterable_tree import FilterableDirectoryTree
 
@@ -26,18 +27,18 @@ class FileManagerApp(App):
     Screen {
         background: $surface;
     }
-    
+
     Header {
         background: $primary-darken-2;
         color: $text;
         text-style: bold;
     }
-    
+
     Footer {
         background: $panel-darken-1;
         color: $text-muted;
     }
-    
+
     #main-container {
         layout: horizontal;
         height: 1fr;
@@ -45,7 +46,7 @@ class FileManagerApp(App):
         margin: 0;
         background: $surface;
     }
-    
+
     #left-pane {
         width: 40%;
         height: 100%;
@@ -53,14 +54,14 @@ class FileManagerApp(App):
         border-right: vkey $primary;
         padding: 0;
     }
-    
+
     #right-pane {
         width: 60%;
         height: 100%;
         background: $surface;
         padding: 0;
     }
-    
+
     #tree-header {
         height: 3;
         background: $primary-darken-1;
@@ -69,34 +70,55 @@ class FileManagerApp(App):
         text-style: bold;
         content-align: center middle;
     }
-    
+
     #tree-container {
         height: 1fr;
         background: $panel;
         padding: 1 2;
         border-bottom: solid $primary-darken-2;
     }
-    
+
     DirectoryTree, FilterableDirectoryTree {
         height: 100%;
         background: $panel;
         scrollbar-gutter: stable;
         scrollbar-size: 1 1;
     }
-    
+
     DirectoryTree > .directory-tree--folder, FilterableDirectoryTree > .directory-tree--folder {
         color: $accent;
         text-style: bold;
     }
-    
+
     DirectoryTree > .directory-tree--file, FilterableDirectoryTree > .directory-tree--file {
         color: $text;
     }
-    
+
     DirectoryTree:focus, FilterableDirectoryTree:focus {
         border: none;
     }
-    
+
+    /* Git status indicator colors */
+    .git-status-modified {
+        color: $warning;
+        text-style: bold;
+    }
+
+    .git-status-staged {
+        color: $success;
+        text-style: bold;
+    }
+
+    .git-status-deleted {
+        color: $error;
+        text-style: bold;
+    }
+
+    .git-status-untracked {
+        color: $accent;
+        text-style: italic;
+    }
+
     #tree-footer {
         height: 3;
         background: $panel-darken-1;
@@ -104,13 +126,13 @@ class FileManagerApp(App):
         padding: 1 2;
         text-style: italic;
     }
-    
+
     #preview-container {
         height: 100%;
         padding: 0;
         layout: vertical;
     }
-    
+
     #preview-header {
         height: 3;
         background: $primary-darken-1;
@@ -119,7 +141,7 @@ class FileManagerApp(App):
         text-style: bold;
         content-align: left middle;
     }
-    
+
     #preview-content {
         height: 1fr;
         background: $surface;
@@ -128,7 +150,7 @@ class FileManagerApp(App):
         color: $text;
         scrollbar-size: 1 1;
     }
-    
+
     #preview-footer {
         height: 3;
         background: $panel-darken-1;
@@ -150,29 +172,29 @@ class FileManagerApp(App):
         border-top: solid $primary-darken-2;
         padding: 0 1;
     }
-    
+
     .file-icon {
         color: $success;
     }
-    
+
     .dir-icon {
         color: $warning;
     }
-    
+
     .info-label {
         color: $text-muted;
         text-style: italic;
     }
-    
+
     .error-text {
         color: $error;
         text-style: bold;
     }
-    
+
     .success-text {
         color: $success;
     }
-    
+
     .warning-text {
         color: $warning;
     }
@@ -194,6 +216,7 @@ class FileManagerApp(App):
         Binding("escape", "clear_selection", "Clear", show=False),
         Binding("b", "bookmark_current", "Bookmark", key_display="b"),
         Binding("B", "browse_bookmarks", "Bookmarks", key_display="B"),
+        Binding(",", "open_config", "Config", key_display=","),
     ]
 
     def __init__(self):
@@ -946,7 +969,8 @@ class FileManagerApp(App):
   • Syntax highlighting for common code/config files
   • File operations: copy, move, rename, delete
   • Search and filter by filename
-  • Bookmarks (coming soon)
+  • Bookmarks for quick directory access
+  • Git status indicators in file tree
 
 [bold yellow]💡 Tips[/bold yellow]
   • Use keyboard for fastest navigation
@@ -957,6 +981,15 @@ class FileManagerApp(App):
 [bold yellow]🔖 Bookmarks[/bold yellow]
   [green]b[/green]             Bookmark current directory
   [green]B[/green]             Browse all bookmarks
+
+[bold yellow]⚙️ Configuration[/bold yellow]
+  [green],[/green]             Open configuration screen
+
+[bold yellow]📁 Git Status[/bold yellow]
+  [yellow]M[/yellow]             Modified file
+  [green]A[/green]              Staged file
+  [red]D[/red]                Deleted file
+  [cyan]?[/cyan]               Untracked file
 
 [bold cyan]═══════════════════════════════════════════════════════[/bold cyan]
 [dim]Press [bold]h[/bold] to close this help screen[/dim]
@@ -995,6 +1028,23 @@ class FileManagerApp(App):
             content += "\n[dim]Navigate to a bookmarked path to quick-access it.[/dim]"
 
         preview.update(content)
+
+    def action_open_config(self) -> None:
+        """Open configuration screen."""
+        self._clear_delete_confirmation()
+        self.help_visible = False
+        
+        def handle_config_result(saved: bool) -> None:
+            """Handle configuration screen result."""
+            if saved:
+                self._set_status("Configuration saved")
+                # Refresh the directory tree to apply any changes
+                self.action_refresh()
+            else:
+                self._set_status("Configuration cancelled")
+        
+        config_screen = ConfigScreen(self.config)
+        self.push_screen(config_screen, handle_config_result)
 
     def action_clear_selection(self) -> None:
         """Clear current selection."""

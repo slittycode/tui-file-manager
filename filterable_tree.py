@@ -1,8 +1,12 @@
 """Filterable directory tree widget."""
+import time
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional
 
+from rich.text import Text
 from textual.widgets import DirectoryTree
+
+from git_service import GitService, GitStatus
 
 
 class FilterableDirectoryTree(DirectoryTree):
@@ -17,6 +21,9 @@ class FilterableDirectoryTree(DirectoryTree):
         """
         super().__init__(path, **kwargs)
         self.filter_query = ""
+        self.git_service = GitService(Path(path))
+        self._git_status_cache = {}
+        self._cache_ttl = 5.0  # Cache for 5 seconds
 
     def set_filter_query(self, query: str) -> bool:
         """Set the filter query.
@@ -100,3 +107,91 @@ class FilterableDirectoryTree(DirectoryTree):
                 continue
 
         return False
+
+    def _get_git_status(self, file_path: str) -> Optional[GitStatus]:
+        """Get Git status for a file with caching.
+        
+        Args:
+            file_path: Relative path to the file.
+            
+        Returns:
+            Git status if available, None otherwise.
+        """
+        current_time = time.time()
+        cache_key = file_path
+        
+        # Check cache
+        if cache_key in self._git_status_cache:
+            cached_time, cached_status = self._git_status_cache[cache_key]
+            if current_time - cached_time < self._cache_ttl:
+                return cached_status
+        
+        # Get fresh status
+        status = self.git_service.get_file_status(file_path)
+        
+        # Cache the result
+        self._git_status_cache[cache_key] = (current_time, status)
+        
+        return status
+
+    def _clear_expired_cache(self) -> None:
+        """Clear expired entries from the Git status cache."""
+        current_time = time.time()
+        expired_keys = []
+        
+        for cache_key, (cached_time, _) in self._git_status_cache.items():
+            if current_time - cached_time >= self._cache_ttl:
+                expired_keys.append(cache_key)
+        
+        for key in expired_keys:
+            del self._git_status_cache[key]
+
+    def _render_label_with_git_status(self, path: Path) -> Text:
+        """Render a label with Git status indicator.
+        
+        Args:
+            path: Path to render label for.
+            
+        Returns:
+            Text object with Git status indicator.
+        """
+        # Get the relative path from the tree root
+        try:
+            relative_path = str(path.relative_to(Path(self.path)))
+        except ValueError:
+            # Path is not relative to tree root, use name only
+            relative_path = path.name
+        
+        # Get Git status
+        git_status = self._get_git_status(relative_path)
+        
+        # Create the label
+        label = Text()
+        
+        # Add Git status indicator if available
+        if git_status and git_status != GitStatus.CLEAN:
+            symbol = self.git_service.get_status_symbol(git_status)
+            color = self.git_service.get_status_color(git_status)
+            
+            if symbol and color:
+                label.append(f"{symbol} ", style=color)
+        
+        # Add the file/directory name
+        label.append(path.name)
+        
+        return label
+
+    def render_label(self, path: Path) -> Text:
+        """Override to render labels with Git status indicators.
+        
+        Args:
+            path: Path to render label for.
+            
+        Returns:
+            Text object with Git status indicator and filename.
+        """
+        # Clear expired cache entries periodically
+        if len(self._git_status_cache) > 100:  # Clear cache if it gets too large
+            self._clear_expired_cache()
+        
+        return self._render_label_with_git_status(path)

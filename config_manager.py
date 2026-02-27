@@ -68,13 +68,82 @@ class ConfigManager:
         return self.DEFAULT_CONFIG.get(key, default)
 
     def set(self, key: str, value: Any) -> None:
-        """Set a configuration value.
+        """Set a configuration value with validation.
         
         Args:
             key: The configuration key.
             value: The value to set.
+            
+        Raises:
+            ValueError: If key is invalid or value validation fails.
         """
+        # Validate key
+        if key not in self.DEFAULT_CONFIG:
+            raise ValueError(f"Unknown configuration key: {key}")
+        
+        # Validate value based on key
+        self._validate_value(key, value)
+        
         self._config[key] = value
+        self.save()  # Auto-save after setting
+
+    def _validate_value(self, key: str, value: Any) -> None:
+        """Validate a configuration value.
+        
+        Args:
+            key: The configuration key.
+            value: The value to validate.
+            
+        Raises:
+            ValueError: If value is invalid for the given key.
+        """
+        if key == "theme":
+            if value not in ["light", "dark"]:
+                raise ValueError(f"Theme must be 'light' or 'dark', got: {value}")
+        
+        elif key == "preview_size_limit":
+            if not isinstance(value, int) or value <= 0:
+                raise ValueError(f"Preview size limit must be a positive integer, got: {value}")
+        
+        elif key == "preview_char_limit":
+            if not isinstance(value, int) or value <= 0:
+                raise ValueError(f"Preview character limit must be a positive integer, got: {value}")
+        
+        elif key == "ignored_patterns":
+            if not isinstance(value, list):
+                raise ValueError("Ignored patterns must be a list")
+            for pattern in value:
+                if not isinstance(pattern, str) or not pattern.strip():
+                    raise ValueError(f"Invalid ignored pattern: {pattern}")
+        
+        elif key == "show_hidden_files":
+            if not isinstance(value, bool):
+                raise ValueError(f"show_hidden_files must be boolean, got: {value}")
+        
+        elif key == "syntax_highlighting":
+            if not isinstance(value, bool):
+                raise ValueError(f"syntax_highlighting must be boolean, got: {value}")
+        
+        elif key == "line_numbers":
+            if not isinstance(value, bool):
+                raise ValueError(f"line_numbers must be boolean, got: {value}")
+        
+        elif key == "confirm_delete":
+            if not isinstance(value, bool):
+                raise ValueError(f"confirm_delete must be boolean, got: {value}")
+        
+        elif key == "auto_refresh":
+            if not isinstance(value, bool):
+                raise ValueError(f"auto_refresh must be boolean, got: {value}")
+        
+        elif key == "default_path":
+            if not isinstance(value, str):
+                raise ValueError(f"default_path must be a string, got: {value}")
+
+    def reset_all(self) -> None:
+        """Reset all configuration to defaults."""
+        self._config = {}
+        self.save()
 
     def reset(self, key: Optional[str] = None) -> None:
         """Reset configuration to defaults.
