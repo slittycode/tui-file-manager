@@ -39,6 +39,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Click, double-click, Ctrl+click, and Shift+click interactions
 - Multi-selection support with visual feedback
 - Enhanced user experience with both keyboard and mouse interactions
+- Image preview system with ASCII, ANSI, and block character rendering
+- Support for 7 image formats: jpg, jpeg, png, gif, bmp, tiff, webp
+- Auto-configuration based on terminal capabilities
+- Graceful fallback when PIL is not available
+- Fuzzy search service with rapidfuzz integration
+- fzf-style fuzzy searching with configurable parameters
+- Debounced search to prevent performance issues
+- Case-sensitive/insensitive search options
+- Configurable search depth and result limits
+- Multiple sorting options and search statistics
+- Comprehensive test suite expanded to 315+ tests
 
 ### Changed
 - Enhanced error handling in filesystem operations

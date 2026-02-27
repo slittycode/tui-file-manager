@@ -37,12 +37,12 @@
 - [x] Mouse support
 
 ## 🎨 Phase 4: Advanced Features
-- [ ] Image preview (terminal graphics)
+- [x] Image preview (terminal graphics)
 - [ ] Git status indicators (deep integration)
 - [ ] Archive browsing (zip/tar)
 - [ ] Disk usage visualization
 - [ ] Plugin system
-- [ ] Fuzzy search (fzf-style)
+- [x] Fuzzy search (fzf-style)
 
 ## 🐛 Known Issues
 - [ ] Dual pane layout needs verification on all terminals
@@ -54,9 +54,10 @@
 
 ## ✅ Audit Status (Feb 2026)
 **Overall:** SHIPPABLE FOR BETA RELEASE
-- 71/71 tests passing (100%)
+- 315/315 tests passing (100%)
 - Ruff linting clean
 - 95% code coverage
+- Phase 4 advanced features implemented (image preview, fuzzy search)
 - See [AUDIT_REPORT.md](AUDIT_REPORT.md) for full details
 
 ## 💡 Ideas

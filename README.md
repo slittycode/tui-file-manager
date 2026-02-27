@@ -24,7 +24,9 @@ A modern terminal-based file manager built with Python and Textual.
 - 🎨 8 built-in color themes with dynamic switching
 - 🖼️ File icons using Nerd Fonts (50+ file types)
 - 🖱️ Mouse support for intuitive navigation
-- 🧪 Comprehensive test suite (245+ tests)
+- 🖼️ Image preview with ASCII/ANSI/block rendering
+- 🔍 Fuzzy search (fzf-style) with rapidfuzz
+- 🧪 Comprehensive test suite (315+ tests)
 
 ## Installation
 
@@ -136,11 +138,11 @@ Syntax highlighting for: Python, JavaScript, TypeScript, JSON, Markdown, YAML, T
 ## Testing
 
 ```bash
-# Run all tests (71 tests)
-PYTHONPATH=. pytest tests/ -v --override-ini="addopts="
+# Run all tests (315 tests)
+pytest tests/ -v
 
 # Run with coverage (requires pytest-cov)
-PYTHONPATH=. pytest tests/ -v --cov=filesystem_service --cov=filterable_tree
+pytest tests/ -v --cov=. --cov-report=html
 
 # View HTML coverage report
 open htmlcov/index.html
@@ -167,22 +169,29 @@ pytest
 
 ```
 tui-fm/
-├── app.py                 # Main application UI logic
-├── main.py                # Entry point
-├── filesystem_service.py  # File operations
-├── filterable_tree.py     # Custom directory tree widget
-├── config_manager.py      # Configuration management
-├── bookmarks_manager.py   # Bookmarks management
-├── tests/                 # Test suite
-├── requirements.txt       # Dependencies
-├── pyproject.toml         # Package configuration
-└── README.md              # This file
+├── app.py                      # Main application UI logic
+├── main.py                     # Entry point
+├── filesystem_service.py       # File operations
+├── filterable_tree.py          # Custom directory tree widget
+├── config_manager.py           # Configuration management
+├── bookmarks_manager.py        # Bookmarks management
+├── image_preview_service.py    # Image preview functionality
+├── fuzzy_search_service.py     # Fuzzy search implementation
+├── icon_manager.py             # File icon management
+├── theme_manager.py            # Theme management
+├── mouse_handler.py            # Mouse event handling
+├── git_service.py              # Git status integration
+├── tab_manager.py              # Tab management
+├── tests/                       # Test suite
+├── requirements.txt             # Dependencies
+├── pyproject.toml               # Package configuration
+└── README.md                    # This file
 ```
 
 ## Status & Roadmap
 
 **Current Status:** ✅ Beta-ready (see [AUDIT_REPORT.md](AUDIT_REPORT.md))
-- 71 tests passing (100%)
+- 315 tests passing (100%)
 - 95% code coverage
 - Clean linting
 - No critical bugs
@@ -196,17 +205,21 @@ See [TODO.md](TODO.md) for the complete roadmap.
 - ✅ Search/filter functionality
 - ✅ Bookmarks system
 - ✅ Configuration system
-- ✅ Comprehensive testing (70+ tests)
+- ✅ Multiple tabs with navigation
+- ✅ Color themes (8 built-in)
+- ✅ File icons (Nerd Fonts)
+- ✅ Mouse support
+- ✅ Image preview (ASCII/ANSI/block)
+- ✅ Fuzzy search (fzf-style)
+- ✅ Comprehensive testing (315+ tests)
 - ✅ CI/CD pipeline
 
 ### In Progress
-- 🚧 Git status indicators
+- 🚧 Git status indicators (deep integration)
 - 🚧 Enhanced preview (markdown render, hex dump)
 
 ### Planned
-- Multiple tabs
-- Image preview
-- Archive browsing
+- Archive browsing (zip/tar)
 - Disk usage visualization
 - Plugin system
 
